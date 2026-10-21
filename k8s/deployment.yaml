@@ -1,0 +1,31 @@
+# CI/CD and GitOps files
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-app
+  labels: { app: fastapi-app }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: fastapi-app }
+  template:
+    metadata:
+      labels: { app: fastapi-app }
+    spec:
+      containers:
+        - name: app
+          image: <866934333672>.dkr.ecr.us-west-1.amazonaws.com/fastapi-application-demo1-dev:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_ENV
+              value: dev
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 15
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits:   { cpu: 500m, memory: 256Mi }
